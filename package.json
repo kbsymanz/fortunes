@@ -7,9 +7,13 @@
   "author": "Kurt Symanzik",
   "keywords": ["fortune", "fortunes"],
   "engines": { "node": "*" },
+  "dependencies": {
+    "underscore": "*"
+  },
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "underscore": "*"
   },
   "os": ["linux"],
   "private": true

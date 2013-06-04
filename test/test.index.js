@@ -7,104 +7,70 @@
  */
 
 var should = require('should')
+  , _ = require('underscore')
   , f = require('../index')
+  , timeout = 5000
   ;
 
 describe('Fortune tests:', function() {
-  describe('Configuration:', function() {
-    it('Set max returned', function(done) {
-      var max = 12
-        ;
-
-      f.reset();
-      f.setMax(max);
-      f.getMax().should.equal(max);
-      done();
-    });
-
-    it('Reset to defaults', function(done) {
-      var max = 8
-        , categories = ['startrek', 'sports']
-        ;
-
-      f.reset();
-      f.setMax(max);
-      f.setShort(true);
-      f.setCategories(categories);
-
-      f.reset();
-      f.getMax().should.equal(10);
-      f.getShort().should.be.false;
-      f.getCategories().should.eql([]);
-      done();
-    });
-
-    it('Set categories', function(done) {
-      var categories = ['pets', 'science', 'sports']
-        ;
-
-      f.reset();
-      f.setCategories(categories);
-      f.getCategories().should.includeEql(categories[0]);
-      f.getCategories().should.includeEql(categories[1]);
-      f.getCategories().should.includeEql(categories[2]);
-      done();
-    });
-
-    it('Set short only', function(done) {
-      f.reset();
-      f.getShort().should.be.false;
-      f.setShort(true);
-      f.getShort().should.be.true;
-      f.setShort(false);
-      f.getShort().should.be.false;
-      done();
-    });
-  });
 
   describe('Search:', function() {
-    it('Search results limited by max, no search term', function(done) {
-      var max = 22
-        ;
 
-      f.reset();
-      f.setMax(max);
+    it('no options sent, all defaults', function(done) {
+      this.timeout(timeout);
       f.search(function(results) {
         results.should.be.an.instanceOf(Array);
-        should.strictEqual(results.length, max);
+        should.strictEqual(results.length, 10);
         done();
       });
     });
 
-    it('Search results limited by max, with search term', function(done) {
-      var max = 6
-        , term = 'men'
+    it('max test, wildcard search', function(done) {
+      this.timeout(timeout);
+      var options = {}
         ;
 
-      f.reset();
-      f.setMax(max);
-      f.search(term, function(results) {
+      options.max = 22;
+
+      f.search(options, function(results) {
         results.should.be.an.instanceOf(Array);
-        should.strictEqual(results.length, max);
+        should.strictEqual(results.length, options.max);
         done();
       });
     });
 
-    it('Search results limited by short, no search term', function(done) {
-      var maxLen = 0
+    it('max test, word search', function(done) {
+      this.timeout(timeout);
+      var options = {}
+        ;
+
+      options.max = 4;
+      options.term = 'men';
+
+      f.search(options, function(results) {
+        results.should.be.an.instanceOf(Array);
+        should.strictEqual(results.length, options.max);
+        done();
+      });
+    });
+
+    it('short fortunes only, wildcard search', function(done) {
+      this.timeout(5000);
+      var options = {}
+        , maxLen = 0
         , maxShortLen = 0
         ;
 
-      f.reset();
-      f.search(function(results) {
+      options.max = 200;
+      f.search(options, function(results) {
         for (var i = 0; i < results.length; i++) {
           if (results[i].length > maxLen) {
             maxLen = results[i].length;
           }
         }
 
-        f.setShort(true);
-        f.search(function(results2) {
+        options.isShort = true;
+        f.search(options, function(results2) {
           for (var i = 0; i < results2.length; i++) {
             if (results2[i].length > maxShortLen) {
               maxShortLen = results2[i].length;
@@ -116,22 +82,24 @@ describe('Fortune tests:', function() {
       });
     });
 
-    it('Search results limited by short, with search term', function(done) {
-      var maxLen = 0
+    it('short fortunes only, word search', function(done) {
+      this.timeout(5000);
+      var options = {}
+        , maxLen = 0
         , maxShortLen = 0
-        , term = 'men'
         ;
 
-      f.reset();
-      f.search(term, function(results) {
+      options.max = 200;
+      options.term = 'men';
+      f.search(options, function(results) {
         for (var i = 0; i < results.length; i++) {
           if (results[i].length > maxLen) {
             maxLen = results[i].length;
           }
         }
 
-        f.setShort(true);
-        f.search(term, function(results2) {
+        options.isShort = true;
+        f.search(options, function(results2) {
           for (var i = 0; i < results2.length; i++) {
             if (results2[i].length > maxShortLen) {
               maxShortLen = results2[i].length;
@@ -143,13 +111,14 @@ describe('Fortune tests:', function() {
       });
     });
 
-    it('Search results limited by category', function(done) {
-      var cats = ['medicine', 'linux', 'work']
+    it('search within category', function(done) {
+      this.timeout(5000);
+      var options = {}
+        , cats = ['sports']
         ;
 
-      f.reset();
-      f.setCategories(cats);
-      f.search(function(results) {
+      options.categories = cats;
+      f.search(options, function(results) {
         //for (var i = 0; i < results.length; i++) {
           //console.log(results[i]);
           //console.log('-----');
@@ -160,21 +129,49 @@ describe('Fortune tests:', function() {
         // --------------------------------------------------------
         done();
       });
+    });
 
+    it('search returns no duplicates', function(done) {
+      this.timeout(5000);
+      var options = {}
+        ;
+
+      options.max = 1000;
+      options.categories = ['sports'];
+      f.search(options, function(results) {
+        var unique = _.uniq(results);
+        (unique.length === results.length).should.be.true;
+        done();
+      });
     });
 
   });
 
-  //describe('Random', function() {
-    //it('Get back one random fortune', function(done) {
-      //f.random(function(result) {
-        //result.should.be.an.instanceOf(String);
-        //console.log(result);
-        //done();
-      //});
-    //});
+  describe('Random', function() {
 
-  //});
+    it('random with no options', function(done) {
+      this.timeout(5000);
+      f.random(function(result) {
+        result.should.be.a('string');
+        done();
+      });
+    });
+
+    it('random with options', function(done) {
+      this.timeout(5000);
+      var options = {}
+        ;
+
+      options.isShort = true;
+      options.term = 'men';
+      f.random(options, function(result) {
+        result.should.be.a('string');
+        / men /i.test(result).should.be.true;
+        result.length.should.be.below(161);
+        done();
+      });
+    });
+  });
 
 });
 

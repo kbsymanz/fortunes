@@ -1,7 +1,7 @@
 {
   "name": "fortunes",
   "version": "0.0.2",
-  "description": "Interface to the fortunes installed on many Linux systems.",
+  "description": "Interface to the fortunes installed on Ubuntu.",
   "license": "MIT",
   "main": "index.js",
   "author": {
@@ -19,5 +19,9 @@
     "underscore": "*"
   },
   "os": ["linux"],
-  "private": true
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kbsymanz/fortunes.git"
+  }
 }

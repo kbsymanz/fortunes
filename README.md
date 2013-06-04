@@ -10,6 +10,14 @@ Provides a simple interface to the fortune program and data in Linux. Allows for
 
 Also allows the maximum number of fortunes returned to be specified.
 
+## Prerequisites
+
+The fortune program needs to be installed in order for this module to work because this module uses spawn to run the fortune program in order to get the data.
+
+On Ubuntu, you install it like this:
+
+    sudo apt-get install fortune-mod
+
 ## Installation
 
     npm install fortunes
@@ -75,5 +83,4 @@ I personally needed a module that would provide me data for some other testing o
 
 ## Future
 
-The current implementation is slow due to the spawn that it uses to interface with the fortune program, among other things. It might be faster to not use the spawn, index the data files themselves and reference them directly or with a fast database. But I have not addressed any of these or other performance issues yet.
-
+The current implementation uses spawn to interface with the fortune program which means that the fortune program needs to be installed as a prerequisite. I don't have any plans to change this right now because it meets my needs and it was the path of least resistance. But it would be nice to not have this dependency.

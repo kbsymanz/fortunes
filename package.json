@@ -1,6 +1,6 @@
 {
   "name": "fortunes",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Interface to the fortunes installed on Ubuntu.",
   "license": "MIT",
   "main": "index.js",
